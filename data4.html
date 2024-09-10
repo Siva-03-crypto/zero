@@ -1,49 +1,104 @@
-// Function to get query parameters from URL
-function getQueryParams() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return {
-        pickup: urlParams.get('pickup'),
-        destination: urlParams.get('destination')
-    };
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with Directions</title>
 
-// Get the pickup and destination from the URL
-const addresses = getQueryParams();
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-if (addresses.pickup && addresses.destination) {
-    console.log("Pickup:", addresses.pickup);
-    console.log("Destination:", addresses.destination);
-    // Use these addresses to geocode and show the route
-    geocodeAndDisplayRoute(addresses.pickup, addresses.destination);
-} else {
-    console.error('Pickup or destination address not provided in URL');
-}
+    <style>
+        #map {
+            height: 800px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
 
-// Function to geocode and show the route
-async function geocodeAndDisplayRoute(pickupAddress, destinationAddress) {
-    try {
-        const pickupCoordinates = await geocodeAddress(pickupAddress);
-        const destinationCoordinates = await geocodeAddress(destinationAddress);
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-        // Clear existing routes and markers
-        map.eachLayer(layer => {
-            if (layer instanceof L.Marker || layer instanceof L.Routing.Control) {
-                map.removeLayer(layer);
-            }
-        });
+    <!-- Leaflet Routing Machine (for directions) -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
-        // Add markers and route
-        L.marker(pickupCoordinates).addTo(map).bindPopup('Pickup Point').openPopup();
-        L.marker(destinationCoordinates).addTo(map).bindPopup('Destination Point').openPopup();
+    <script>
+        // Initialize the map and set its view to some default coordinates
+        var map = L.map('map').setView([51.505, -0.09], 13);  // Default to London
 
-        L.Routing.control({
-            waypoints: [
-                L.latLng(pickupCoordinates),
-                L.latLng(destinationCoordinates)
-            ],
-            routeWhileDragging: true
+        // Add a tile layer to the map (MapTiler)
+        L.tileLayer('https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=RGMoiAOaE4je4XIenXy0', {
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
         }).addTo(map);
-    } catch (error) {
-        console.error(error.message);
-    }
-}
+
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                pickup: urlParams.get('pickup'),
+                destination: urlParams.get('destination')
+            };
+        }
+
+        // Get the pickup and destination addresses from the URL
+        const addresses = getQueryParams();
+
+        if (addresses.pickup && addresses.destination) {
+            console.log("Pickup:", addresses.pickup);
+            console.log("Destination:", addresses.destination);
+            // If pickup and destination addresses are provided, geocode and show the route
+            geocodeAndDisplayRoute(addresses.pickup, addresses.destination);
+        } else {
+            console.error('Pickup or destination address not provided in the URL');
+        }
+
+        // Function to geocode an address (replace with your actual geocoding API)
+        async function geocodeAddress(address) {
+            const apiKey = 'YOUR_OPENCAGE_API_KEY';  // Replace with your actual API key
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.results.length > 0) {
+                const { lat, lng } = data.results[0].geometry;
+                return [lat, lng];
+            } else {
+                throw new Error('Address not found');
+            }
+        }
+
+        // Function to geocode pickup and destination addresses and show the route on the map
+        async function geocodeAndDisplayRoute(pickupAddress, destinationAddress) {
+            try {
+                const pickupCoordinates = await geocodeAddress(pickupAddress);
+                const destinationCoordinates = await geocodeAddress(destinationAddress);
+
+                // Clear any existing markers or routes
+                map.eachLayer(layer => {
+                    if (layer instanceof L.Marker || layer instanceof L.Routing.Control) {
+                        map.removeLayer(layer);
+                    }
+                });
+
+                // Add markers for pickup and destination
+                L.marker(pickupCoordinates).addTo(map).bindPopup('Pickup Point').openPopup();
+                L.marker(destinationCoordinates).addTo(map).bindPopup('Destination Point').openPopup();
+
+                // Show route between the two points
+                L.Routing.control({
+                    waypoints: [
+                        L.latLng(pickupCoordinates),
+                        L.latLng(destinationCoordinates)
+                    ],
+                    routeWhileDragging: true
+                }).addTo(map);
+
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+    </script>
+</body>
+</html>
