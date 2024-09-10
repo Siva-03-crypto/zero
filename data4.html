@@ -1,0 +1,49 @@
+// Function to get query parameters from URL
+function getQueryParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+        pickup: urlParams.get('pickup'),
+        destination: urlParams.get('destination')
+    };
+}
+
+// Get the pickup and destination from the URL
+const addresses = getQueryParams();
+
+if (addresses.pickup && addresses.destination) {
+    console.log("Pickup:", addresses.pickup);
+    console.log("Destination:", addresses.destination);
+    // Use these addresses to geocode and show the route
+    geocodeAndDisplayRoute(addresses.pickup, addresses.destination);
+} else {
+    console.error('Pickup or destination address not provided in URL');
+}
+
+// Function to geocode and show the route
+async function geocodeAndDisplayRoute(pickupAddress, destinationAddress) {
+    try {
+        const pickupCoordinates = await geocodeAddress(pickupAddress);
+        const destinationCoordinates = await geocodeAddress(destinationAddress);
+
+        // Clear existing routes and markers
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker || layer instanceof L.Routing.Control) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Add markers and route
+        L.marker(pickupCoordinates).addTo(map).bindPopup('Pickup Point').openPopup();
+        L.marker(destinationCoordinates).addTo(map).bindPopup('Destination Point').openPopup();
+
+        L.Routing.control({
+            waypoints: [
+                L.latLng(pickupCoordinates),
+                L.latLng(destinationCoordinates)
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+    } catch (error) {
+        console.error(error.message);
+    }
+}
