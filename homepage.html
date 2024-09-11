@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        /* Full page styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container with background */
+        .background-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://media.istockphoto.com/id/492362277/photo/3d-yellow-taxi.jpg?s=612x612&w=0&k=20&c=RXoWaS8t0UrqGN0cFxrbLDROw_bThdCrh-lSYjWU5L0='); /* Background image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Inner container for form */
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9); /* White background with transparency */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        .form-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* Style for login button */
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none; /* Remove underline from link */
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-container">
+        <div class="form-container">
+            <h1>Login</h1>
+            <form>
+                <div class="form-group">
+                    <input type="text" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <!-- Styled link as button -->
+                <a href="https://creatorapp.zoho.in/studytester01/driver-app/#Form:Book_a_Cab" class="login-button">Log In</a>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
