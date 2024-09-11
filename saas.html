@@ -57,7 +57,7 @@
         // Function to geocode an address (replace with your actual geocoding API)
         async function geocodeAddress(address) {
             const apiKey = '2cc1c7c11cc64e85b8787bfad435e018';  // Replace with your actual API key
-            const url = `https://api.opencagedata.com/geocode/v1/json?q=Frauenplan+1%2C+99423+Weimar%2C+Germany&key=2cc1c7c11cc64e85b8787bfad435e018`;
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=<%pickup%>&key=2cc1c7c11cc64e85b8787bfad435e018`;
             const response = await fetch(url);
             const data = await response.json();
 
