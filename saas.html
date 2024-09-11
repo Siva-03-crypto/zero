@@ -25,8 +25,8 @@
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // Initialize the map and set its view to some default coordinates
-        var map = L.map('map').setView([51.505, -0.09], 13);  // Default to London
+        // Initialize the map
+        var map = L.map('map').setView([20, 0], 2);  // Default to world view
 
         // Add a tile layer to the map (MapTiler)
         L.tileLayer('https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=RGMoiAOaE4je4XIenXy0', {
@@ -48,16 +48,16 @@
         if (addresses.pickup && addresses.destination) {
             console.log("Pickup:", addresses.pickup);
             console.log("Destination:", addresses.destination);
-            // If pickup and destination addresses are provided, geocode and show the route
+            // Geocode and show the route
             geocodeAndDisplayRoute(addresses.pickup, addresses.destination);
         } else {
             console.error('Pickup or destination address not provided in the URL');
         }
 
-        // Function to geocode an address (replace with your actual geocoding API)
+        // Function to geocode an address (using OpenCage Geocoding API)
         async function geocodeAddress(address) {
             const apiKey = '2cc1c7c11cc64e85b8787bfad435e018';  // Replace with your actual API key
-            const url = `https://api.opencagedata.com/geocode/v1/json?q=<%pickup%>&key=2cc1c7c11cc64e85b8787bfad435e018`;
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
             const response = await fetch(url);
             const data = await response.json();
 
@@ -74,6 +74,9 @@
             try {
                 const pickupCoordinates = await geocodeAddress(pickupAddress);
                 const destinationCoordinates = await geocodeAddress(destinationAddress);
+
+                // Recenter the map to fit the route
+                map.fitBounds([pickupCoordinates, destinationCoordinates]);
 
                 // Clear any existing markers or routes
                 map.eachLayer(layer => {
@@ -102,3 +105,4 @@
     </script>
 </body>
 </html>
+
